@@ -84,10 +84,6 @@ make coverage
 ```
 project-root/
 │
-├── alembic/                  # служебная папка Alembic
-│   ├── versions/             # файлы миграций
-│   └── env.py                # конфиг Alembic (читает settings)
-│
 ├── app/                      # приложение
 │   ├── core/                 # общие модули
 │   │   ├── db.py             # engine, session, Base
@@ -103,6 +99,10 @@ project-root/
 │   ├── main.py               # точка входа FastAPI
 │   └── config.py             # Settings (чтение env vars)
 │
+├── migrations/               # каталог с миграциями и нстройками Alembic
+│   ├── versions/             # файлы миграций
+│   └── env.py                # конфиг Alembic (читает settings)
+│
 ├── tests/                    # тесты (используют _test базу)
 │   ├── conftest.py
 │   └── test_subscriptions.py
@@ -113,6 +113,7 @@ project-root/
 ├── docker-compose.yml        # dev окружение (app, app-test, migrate, db)
 ├── Dockerfile                # мультистейдж для prod/dev/test
 ├── Makefile                  # команды для удобства (restart, test, migrate и т.п.)
+├── pyproject.toml            # настройки форматеров кода
 ├── pytest.ini                # настройки тестов
 ├── README.md
 ├── requirements.txt          # зависимости
