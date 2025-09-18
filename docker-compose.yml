@@ -1,0 +1,72 @@
+services:
+  db:
+    container_name: subscriptions-service-db
+    image: postgres:17.4-alpine3.21
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_HOST: ${DB_HOST}
+      POSTGRES_PORT: ${DB_PORT}
+    ports:
+      - "5432:${DB_PORT}"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    command: >
+      sh -c '
+        docker-entrypoint.sh postgres &
+        sleep 5
+        createdb -U ${DB_USER} ${DB_NAME}
+        createdb -U ${DB_USER} ${DB_NAME}_test
+        wait
+      '
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      retries: 5
+
+  app:
+    build: .
+    container_name: subscriptions-service-app
+    command: uvicorn app.main:app --host ${SERVER_HOST} --port ${SERVER_PORT} --reload
+    env_file:
+      - .env
+    ports:
+      - "8080:${SERVER_PORT}"
+    depends_on:
+      - db
+    volumes:
+      - ./app:/app/app
+      - pip_cache:/root/.cache/pip
+
+  app-test:
+    build: .
+    container_name: subscriptions-service-test
+    command: pytest
+    env_file:
+      - .env
+    environment:
+      DB_NAME: ${DB_NAME}_test
+    depends_on:
+      - db
+    volumes:
+      - .:/app
+      - pip_cache:/root/.cache/pip
+    # profiles: ["test"]
+
+  migrate:
+    build: .
+    container_name: subscriptions-migrate
+    entrypoint: ["alembic"]
+    command: ["--help"]
+    env_file:
+      - .env
+    depends_on:
+      - db
+    volumes:
+      - .:/app
+      - pip_cache:/root/.cache/pip
+
+volumes:
+  postgres_data:
+  pip_cache:
