@@ -1,17 +1,19 @@
 # app/subscriptions/handlers.py
+from datetime import date
 from typing import List, Optional
 from uuid import UUID
-from datetime import date
 
 from fastapi import Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.db import get_db_session
-from app.subscriptions.repository import SubscriptionRepository
 from app.subscriptions import schemas
+from app.subscriptions.repository import SubscriptionRepository
 
 
-def get_repository(session: AsyncSession = Depends(get_db_session)) -> SubscriptionRepository:
+def get_repository(
+    session: AsyncSession = Depends(get_db_session),
+) -> SubscriptionRepository:
     return SubscriptionRepository(session)
 
 

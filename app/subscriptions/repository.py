@@ -1,13 +1,13 @@
 # app/subscriptions/repository.py
-from uuid import UUID
 from datetime import date
 from typing import List, Optional
+from uuid import UUID
 
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, func
 
-from app.subscriptions.models import Subscription
 from app.subscriptions import schemas
+from app.subscriptions.models import Subscription
 
 
 class SubscriptionRepository:
@@ -33,7 +33,9 @@ class SubscriptionRepository:
             return schemas.SubscriptionOut.model_validate(sub)
         return None
 
-    async def update(self, subscription_id: UUID, sub_in: schemas.SubscriptionUpdate) -> Optional[schemas.SubscriptionOut]:
+    async def update(
+        self, subscription_id: UUID, sub_in: schemas.SubscriptionUpdate
+    ) -> Optional[schemas.SubscriptionOut]:
         sub = await self._get_subscription_obj(subscription_id)
         if not sub:
             return None
@@ -56,7 +58,7 @@ class SubscriptionRepository:
         user_id: UUID,
         service_name: Optional[str] = None,
         start_date: Optional[date] = None,
-        end_date: Optional[date] = None
+        end_date: Optional[date] = None,
     ) -> List[schemas.SubscriptionOut]:
         query = select(Subscription).where(Subscription.user_id == user_id)
 

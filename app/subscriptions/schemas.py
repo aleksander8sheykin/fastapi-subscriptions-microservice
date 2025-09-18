@@ -1,6 +1,7 @@
 # app/subscriptions/schemas.py
 from datetime import date
 from uuid import UUID
+
 from pydantic import BaseModel, Field, field_validator
 
 
@@ -10,9 +11,7 @@ class SubscriptionBase(BaseModel):
     start_date: date = Field(..., description="Дата начала подписки (месяц-год)")
     end_date: date | None = Field(None, description="Дата окончания подписки (если есть)")
 
-    model_config = {
-        'from_attributes': True
-    }
+    model_config = {"from_attributes": True}
 
     @field_validator("start_date", "end_date", mode="before")
     @classmethod
@@ -22,7 +21,7 @@ class SubscriptionBase(BaseModel):
         if isinstance(v, str):
             v = v.strip()
             try:
-                month, year = map(int, v.split('-'))
+                month, year = map(int, v.split("-"))
                 return date(year, month, 1)
             except Exception:
                 raise ValueError(f"Invalid month-year format: {v!r}")
@@ -39,7 +38,7 @@ class SubscriptionCreate(SubscriptionBase):
                 "price": 400,
                 "start_date": "07-2025",
                 "end_date": "12-2025",
-                "user_id": "550e8400-e29b-41d4-a716-446655440000"
+                "user_id": "550e8400-e29b-41d4-a716-446655440000",
             }
         }
     }
@@ -57,7 +56,7 @@ class SubscriptionUpdate(SubscriptionBase):
                 "service_name": "Netflix",
                 "price": 500,
                 "start_date": "08-2025",
-                "end_date": "09-2025"
+                "end_date": "09-2025",
             }
         }
     }
@@ -75,7 +74,7 @@ class SubscriptionOut(SubscriptionBase):
                 "price": 400,
                 "start_date": "07-2025",
                 "end_date": "12-2025",
-                "user_id": "550e8400-e29b-41d4-a716-446655440000"
+                "user_id": "550e8400-e29b-41d4-a716-446655440000",
             }
         }
     }

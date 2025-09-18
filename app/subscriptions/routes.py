@@ -1,5 +1,6 @@
 # app/subscriptions/routes.py
 from fastapi import APIRouter
+
 from app.subscriptions.handlers import SubscriptionHandler
 
 router = APIRouter()

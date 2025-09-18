@@ -24,11 +24,14 @@ push-prod:
 logs:
 	$(COMPOSE_DEV) logs -f app
 
+make-migrations:
+	$(COMPOSE_DEV) run --rm migrate alembic revision --autogenerate
+	 
 migrate:
-	$(COMPOSE_DEV) run --rm migrate upgrade head
+	$(COMPOSE_DEV) run --rm migrate alembic upgrade head
 
 migrate-down:
-	$(COMPOSE_DEV) run --rm migrate downgrade -1
+	$(COMPOSE_DEV) run --rm migrate alembic downgrade -1
 
 test:
 	$(COMPOSE_DEV) run --rm app-test sh -c "alembic upgrade head && python -m pytest tests/"

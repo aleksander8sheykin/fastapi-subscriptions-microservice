@@ -1,17 +1,20 @@
 # app/core/db.py
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
-from sqlalchemy.orm import sessionmaker, declarative_base
+from sqlalchemy.orm import DeclarativeBase, sessionmaker
 
 from app.config import settings
 
-Base = declarative_base()
+
+class Base(DeclarativeBase):
+    pass
+
 
 DATABASE_URL = (
     f"postgresql+asyncpg://{settings.DB_USER}:{settings.DB_PASSWORD}"
     f"@{settings.DB_HOST}:{settings.DB_PORT}/{settings.DB_NAME}"
 )
 
-is_debug_mode = settings.LOG_LEVEL == 'debug'
+is_debug_mode = settings.LOG_LEVEL == "debug"
 engine = create_async_engine(
     DATABASE_URL,
     echo=is_debug_mode,
@@ -25,6 +28,7 @@ async_session_maker = sessionmaker(
     class_=AsyncSession,
     expire_on_commit=False,
 )
+
 
 async def get_db_session() -> AsyncSession:
     async with async_session_maker() as session:

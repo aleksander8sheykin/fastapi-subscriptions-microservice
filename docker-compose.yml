@@ -42,7 +42,6 @@ services:
   app-test:
     build: .
     container_name: subscriptions-service-test
-    command: pytest
     env_file:
       - .env
     environment:
@@ -52,13 +51,11 @@ services:
     volumes:
       - .:/app
       - pip_cache:/root/.cache/pip
-    # profiles: ["test"]
+    command: ["bash", "-c", "echo 'CMD overridden'"]
 
   migrate:
     build: .
     container_name: subscriptions-migrate
-    entrypoint: ["alembic"]
-    command: ["--help"]
     env_file:
       - .env
     depends_on:
@@ -66,6 +63,7 @@ services:
     volumes:
       - .:/app
       - pip_cache:/root/.cache/pip
+    command: ["bash", "-c", "echo 'CMD overridden'"]
 
 volumes:
   postgres_data:
