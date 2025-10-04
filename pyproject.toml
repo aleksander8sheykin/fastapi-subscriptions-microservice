@@ -1,34 +1,9 @@
-[tool.black]
+[tool.ruff]
 line-length = 100
-target-version = ["py310"]
-skip-string-normalization = false
-include = '\.pyi?$'
-exclude = '''
-/(
-    \.git
-  | \.mypy_cache
-  | \.tox
-  | \.venv
-)/
-'''
+lint.select = ["E", "F", "W", "C", "B", "I"]
+lint.ignore = ["E501"]
+target-version = "py311"
+exclude = ["migrations", ".venv", ".coverage"]
 
-[tool.isort]
-profile = "black"
-line_length = 100
-multi_line_output = 3
-include_trailing_comma = true
-force_grid_wrap = 0
-use_parentheses = true
-known_first_party = ["app"]  # замените на ваш пакет
-known_third_party = ["fastapi", "pydantic", "sqlalchemy", "asyncpg", "uvicorn", "httpx"]
-
-[tool.flake8]
-max-line-length = 100
-extend-ignore = ["E203", "W503"]  # чтобы не конфликтовало с Black
-exclude = ".git,__pycache__,.venv"
-
-[tool.mypy]
-python_version = 3.12
-files = "app"
-ignore_missing_imports = true
-strict = true
+[tool.ruff.lint.per-file-ignores]
+"app/subscriptions/handlers.py" = ["B008"]

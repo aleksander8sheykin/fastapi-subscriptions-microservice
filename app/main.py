@@ -1,8 +1,9 @@
-# app/main.py
 from fastapi import FastAPI
 
 from app.config import settings
+from app.core.db import engine
 from app.core.logging import get_logger, setup_logging
+from app.core.middleware import add_trace_id
 from app.subscriptions.routes import router as subscriptions_router
 
 setup_logging(settings.LOG_LEVEL)
@@ -13,6 +14,8 @@ app = FastAPI(
     description="REST API для управления подписками пользователей",
     version="1.0.0",
 )
+
+app.middleware("http")(add_trace_id)
 
 app.include_router(subscriptions_router, prefix="/subscriptions")
 
@@ -29,4 +32,5 @@ async def on_startup():
 
 @app.on_event("shutdown")
 async def on_shutdown():
+    await engine.dispose()
     logger.info("Application shutdown")

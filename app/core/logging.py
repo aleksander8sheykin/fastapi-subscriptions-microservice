@@ -1,8 +1,18 @@
-# app/core/logging.py
 import logging
 import logging.config
 import sys
 from typing import Dict
+
+from app.core.context import trace_id_ctx
+
+
+class SingleLineFilter(logging.Filter):
+    def filter(self, record):
+        if isinstance(record.msg, str):
+            record.msg = record.msg.replace("\n", "")
+        trace_id = trace_id_ctx.get()
+        record.trace_id = trace_id if trace_id is not None else 0
+        return True
 
 
 def setup_logging(level: str = "INFO") -> None:
@@ -13,7 +23,7 @@ def setup_logging(level: str = "INFO") -> None:
         "disable_existing_loggers": False,
         "formatters": {
             "default": {
-                "format": "%(asctime)s %(levelname)s [%(name)s] %(message)s",
+                "format": "%(asctime)s %(levelname)s [%(name)s] [trace_id=%(trace_id)s] %(message)s",
             }
         },
         "handlers": {
@@ -21,6 +31,12 @@ def setup_logging(level: str = "INFO") -> None:
                 "class": "logging.StreamHandler",
                 "formatter": "default",
                 "stream": "ext://sys.stdout",
+                "filters": ["single_line_filter"],
+            }
+        },
+        "filters": {
+            "single_line_filter": {
+                "()": SingleLineFilter,
             }
         },
         "root": {"level": level, "handlers": ["console"]},
@@ -33,6 +49,11 @@ def setup_logging(level: str = "INFO") -> None:
                 "propagate": False,
             },
             "uvicorn.access": {
+                "level": "INFO",
+                "handlers": ["console"],
+                "propagate": False,
+            },
+            "sqlalchemy.engine": {
                 "level": "INFO",
                 "handlers": ["console"],
                 "propagate": False,

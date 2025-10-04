@@ -1,8 +1,9 @@
-# app/subscriptions/schemas.py
 from datetime import date
 from uuid import UUID
 
 from pydantic import BaseModel, Field, field_validator
+
+from app.utils.date import parse_month_year
 
 
 class SubscriptionBase(BaseModel):
@@ -15,17 +16,8 @@ class SubscriptionBase(BaseModel):
 
     @field_validator("start_date", "end_date", mode="before")
     @classmethod
-    def parse_month_year(cls, v):
-        if isinstance(v, date):
-            return v
-        if isinstance(v, str):
-            v = v.strip()
-            try:
-                month, year = map(int, v.split("-"))
-                return date(year, month, 1)
-            except Exception:
-                raise ValueError(f"Invalid month-year format: {v!r}")
-        return v
+    def validate_month_year(cls, v):
+        return parse_month_year(v)
 
 
 class SubscriptionCreate(SubscriptionBase):
